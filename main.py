@@ -92,8 +92,27 @@ class Auth(QtWidgets.QMainWindow):
             self.lineEdit2.setText('')
             msg.setText("Нет такого пользователя")
             msg.exec_()
+            logging.info("Неверная попытка входа под логином {0}".format(login))
+            f = open('count.txt', )
+            with open('count.txt', mode='r') as f:
+                lines = f.readlines()
+            count_all, count_ancorrect = int(lines[0]), int(lines[1])
+            count_all += 1
+            count_ancorrect += 1
+            new_lines = f'{count_all}\n{count_ancorrect}'
+            with open('count.txt', mode='w') as f:
+                f.write(new_lines)
         else:
             self.hide()
+            logging.info(f"Вход пользователя {login}")
+            with open('count.txt', mode='r+') as f:
+                lines = f.readlines()
+            count_all, count_ancorrect = int(lines[0]), int(lines[1])
+            count_all += 1
+            
+            new_lines = f'{count_all}\n{count_ancorrect}'
+            with open('count.txt', mode='w') as f:
+                f.write(new_lines)
             if login == 'admin':
                 self.admin = Admin()
                 self.admin.show()
