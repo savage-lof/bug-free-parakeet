@@ -1,6 +1,7 @@
 import sys
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import *
+import logging
 
 import sqlite3 as sl
 
@@ -104,15 +105,6 @@ class Auth(QtWidgets.QMainWindow):
                 f.write(new_lines)
         else:
             self.hide()
-            logging.info(f"Вход пользователя {login}")
-            with open('count.txt', mode='r+') as f:
-                lines = f.readlines()
-            count_all, count_ancorrect = int(lines[0]), int(lines[1])
-            count_all += 1
-            
-            new_lines = f'{count_all}\n{count_ancorrect}'
-            with open('count.txt', mode='w') as f:
-                f.write(new_lines)
             if login == 'admin':
                 self.admin = Admin()
                 self.admin.show()
@@ -191,11 +183,15 @@ if __name__ == '__main__':
                 "password" TEXT)""")
     cursor.execute(f"INSERT INTO users VALUES (?,?)", ("admin", "admin"))
     authorization_db.commit()
-
+    logging.basicConfig(level=logging.INFO, filename="log_auth.log", filemode="a",
+                        format="%(asctime)s %(message)s")
+    
 
     app = QtWidgets.QApplication(sys.argv)
     w = MainWindow()
     w.show()
     sys.exit(app.exec_())
     authorization_db.execute("DELETE FROM users")
+    authorization_db.commit()
+    
 
